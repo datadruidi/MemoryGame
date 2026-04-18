@@ -1,5 +1,6 @@
 const WORDS_API_PATH = "./api/words";
 const WORDS_FILE_PATH = "./data/words.csv";
+const LOCAL_WORDLIST_STORAGE_KEY = "memory-game-wordlist";
 const PAIRS_PER_ROUND = 10;
 const FLIP_BACK_DELAY_MS = 950;
 const ROUND_RESET_DELAY_MS = 1400;
@@ -176,6 +177,12 @@ async function loadVocabularyFileText() {
     }
 
     return remoteResponse.text();
+  }
+
+  const savedWordlist = loadSavedLocalWordlist();
+
+  if (savedWordlist !== null) {
+    return savedWordlist;
   }
 
   const apiResponse = await fetch(WORDS_API_PATH, { cache: "no-store" });
@@ -490,30 +497,14 @@ async function saveWordlist() {
     toggleGameButtons(true);
     saveWordlistButton.disabled = true;
     closeWordlistButtonState(true);
-    setEditorMessage("Saving word file...");
-
-    const response = await fetch(WORDS_API_PATH, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "text/csv; charset=utf-8",
-      },
-      body: csvText,
-    });
-
-    if (!response.ok) {
-      if ([404, 405, 501].includes(response.status)) {
-        throw new Error(
-          "Saving needs the included Node server. Start it with `node server.js` and open http://localhost:8000."
-        );
-      }
-      throw new Error(`Could not save the word file (${response.status} ${response.statusText}).`);
-    }
+    setEditorMessage("Saving wordlist...");
+    saveLocalWordlist(csvText);
 
     if (parsedRows.length >= PAIRS_PER_ROUND) {
-      setEditorMessage("Word file saved. New games will read it live from disk.");
+      setEditorMessage("Wordlist saved in this browser. New games will use it automatically.");
     } else {
       setEditorMessage(
-        `Word file saved. It currently has ${parsedRows.length} valid pairs, so the game needs at least ${PAIRS_PER_ROUND} before a round can start.`,
+        `Wordlist saved in this browser. It currently has ${parsedRows.length} valid pairs, so the game needs at least ${PAIRS_PER_ROUND} before a round can start.`,
         true
       );
     }
@@ -529,6 +520,22 @@ async function saveWordlist() {
 
 function closeWordlistButtonState(disabled) {
   closeEditorButton.disabled = disabled;
+}
+
+function loadSavedLocalWordlist() {
+  try {
+    return globalThis.localStorage?.getItem(LOCAL_WORDLIST_STORAGE_KEY) ?? null;
+  } catch {
+    return null;
+  }
+}
+
+function saveLocalWordlist(csvText) {
+  try {
+    globalThis.localStorage?.setItem(LOCAL_WORDLIST_STORAGE_KEY, csvText);
+  } catch {
+    throw new Error("Unable to save the wordlist in this browser.");
+  }
 }
 
 function setEditorMessage(message, isError = false) {
