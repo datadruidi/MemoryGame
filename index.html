@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Memory Game</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="hero">
+        <div>
+          <h1>Memory Game</h1>
+          <p class="subtitle">Match words and translations. Add, edit, or remove your own words.</p>
+        </div>
+
+        <div class="controls">
+          <div class="primary-actions">
+            <button id="new-game-button" type="button">New Game</button>
+            <button id="load-games-button" type="button" class="secondary-button">Load Games</button>
+            <button id="edit-wordlist-button" type="button" class="secondary-button">Edit Wordlist</button>
+          </div>
+          <div class="stats" aria-live="polite">
+            <span id="round-label">Round 0</span>
+            <span id="matches-label">0 / 10 matches</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="board-panel">
+        <p id="game-status" class="game-status" aria-live="polite"></p>
+        <p id="game-source-label" class="game-source-label">Current list: My Wordlist</p>
+        <div
+          id="game-board"
+          class="game-board is-loading"
+          role="grid"
+          aria-label="Vocabulary memory game board"
+        ></div>
+      </section>
+
+      <section id="games-modal" class="modal-shell" hidden>
+        <div class="modal-backdrop" data-close-games-modal="true"></div>
+        <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="games-modal-title">
+          <div class="modal-header">
+            <div>
+              <h2 id="games-modal-title">Load Games</h2>
+              <p class="modal-tag">Finnish Games</p>
+            </div>
+            <button id="close-games-button" type="button" class="ghost-button">Close</button>
+          </div>
+          <div id="games-list" class="games-list"></div>
+        </div>
+      </section>
+
+      <section id="wordlist-editor" class="editor-panel" hidden>
+        <div class="editor-header">
+          <div>
+            <h2>Word Editor</h2>
+            <p class="editor-hint">Use format `language1,language2` and keep at least 10 word pairs in the list.</p>
+          </div>
+
+          <div class="editor-actions">
+            <button id="save-wordlist-button" type="button">Save Wordlist</button>
+            <button id="close-editor-button" type="button" class="ghost-button">Close</button>
+          </div>
+        </div>
+
+        <p id="editor-message" class="editor-message" aria-live="polite"></p>
+
+        <label class="sr-only" for="wordlist-editor-textarea">Word list file contents</label>
+        <textarea
+          id="wordlist-editor-textarea"
+          class="editor-textarea"
+          spellcheck="false"
+          placeholder="language1,language2&#10;cat,kissa&#10;dog,koira"
+        ></textarea>
+
+      </section>
+    </main>
+
+    <script type="module" src="./game.js"></script>
+  </body>
+</html>
