@@ -10,3 +10,7 @@ You can:
 - play with your own editable wordlist
 - load ready-made Finnish game sets
 - update the default CSV directly in the app
+
+# How to Play?
+
+https://datadruidi.github.io/MemoryGame/
